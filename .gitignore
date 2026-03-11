@@ -42,3 +42,11 @@ notes/
 deploy/
 resources/
 .claude/
+
+# Local-only ops files
+DEPLOYMENT.md
+Dockerfile
+docker-compose.dev.yml
+docker-compose.yml
+ecosystem.config.js
+start.bat
