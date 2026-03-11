@@ -1,0 +1,23 @@
+{
+  "name": "snowtime",
+  "version": "1.0.0",
+  "description": "SnowTime - A multiplayer web board game",
+  "main": "server/index.js",
+  "scripts": {
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "server": "node server/index.js",
+    "client": "cd client && npm run dev",
+    "install:all": "npm install && cd client && npm install",
+    "test": "jest",
+    "test:watch": "jest --watch"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "socket.io": "^4.7.2"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.0",
+    "jest": "^30.3.0",
+    "socket.io-client": "^4.8.3"
+  }
+}
