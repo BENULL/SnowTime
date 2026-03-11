@@ -36,3 +36,9 @@ Thumbs.db
 .idea/
 
 *.tsbuildinfo
+
+# Keep local-only folders untracked
+notes/
+deploy/
+resources/
+.claude/
