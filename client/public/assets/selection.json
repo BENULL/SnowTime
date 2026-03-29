@@ -1,0 +1,39 @@
+{
+  "board": {
+    "path": "D:\\project\\snowtime\\notes\\_extract_tmp\\work\\embedded_4.jpeg",
+    "width": 1219,
+    "height": 1754,
+    "area": 2138126,
+    "ratio": 0.6949828962371721,
+    "selected_size": [
+      1219,
+      1754
+    ]
+  },
+  "card_sheet": {
+    "path": "D:\\project\\snowtime\\notes\\_extract_tmp\\work\\embedded_7.jpeg",
+    "width": 1219,
+    "height": 1754,
+    "area": 2138126,
+    "ratio": 0.6949828962371721,
+    "selected_size": [
+      1219,
+      1754
+    ]
+  },
+  "fruit": {
+    "path": "D:\\project\\snowtime\\client\\public\\assets\\card-sheet.png",
+    "width": 1219,
+    "height": 1754,
+    "area": 2138126,
+    "ratio": 0.6949828962371721,
+    "selected_size": [
+      256,
+      256
+    ],
+    "source": "cropped_from_card_sheet"
+  },
+  "notes": [
+    "Fruit icon not found; cropped from card sheet."
+  ]
+}

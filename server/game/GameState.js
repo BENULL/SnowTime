@@ -21,6 +21,7 @@ class GameState {
       id: p.id,
       name: p.name,
       color: this.deckManager.getPlayerColor(index),
+      roleImage: this.deckManager.getRoleImage(index),
       hand: this.deckManager.createPlayerDeck(p.id, index),
       discardPile: [],
       score: 0,       // 当前分数（在计分轨道上的位置）
@@ -528,7 +529,12 @@ class GameState {
         this.roundState.healerRecycleChoices.set(playerId, {
           needsChoice: true,
           selectedCards: [],
-          discardPile: discardPile.map(card => ({ id: card.id, type: card.type, value: card.value }))
+          discardPile: discardPile.map(card => ({
+            id: card.id,
+            type: card.type,
+            value: card.value,
+            roleImage: card.roleImage || null,
+          }))
         });
 
         needsHealerChoice = true;
@@ -891,8 +897,10 @@ class GameState {
         handCount: p.hand.length,
         discardCount: this.deckManager.getDiscardPile(p.id).length,
         discardPile: this.deckManager.getDiscardPile(p.id).map(card => ({
+          id: card.id,
           type: card.type,
           value: card.value,
+          roleImage: card.roleImage || null,
         })),
         position: p.position,
         score: p.score,
@@ -908,6 +916,7 @@ class GameState {
           cardType: char.card.type,
           cardValue: char.card.value,
           color: char.card.color,
+          roleImage: char.card.roleImage || null,
         })),
       })),
       remainingFruits: this.remainingFruits,
@@ -923,6 +932,7 @@ class GameState {
           cardType: card.type,
           // 角色牌显示层级信息，其他牌显示类型
           cardValue: card.value,
+          roleImage: card.roleImage || null,
         })),
         // 守望玩家信息
         watcherPlayers: this.roundState.watcherPlayers,

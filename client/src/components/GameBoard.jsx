@@ -18,7 +18,7 @@ export function GameBoard({ gameState, privateState, playerName, room, socket, o
 
   if (!gameState) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-snow-dark via-snow-blue to-[#0f0f23]">
+      <div className="min-h-screen flex items-center justify-center p-4 game-backdrop">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-snow-ice border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-white/60">加载游戏中...</p>
@@ -194,10 +194,27 @@ export function GameBoard({ gameState, privateState, playerName, room, socket, o
   // 奖励格图标
   const getBonusIcon = (type) => {
     switch (type) {
-      case 'fruit': return '🟡';
-      case 'fight': return '❄️';
-      case 'mana': return '🔵';
-      default: return null;
+      case 'fruit':
+        return <span className="fruit-token" />;
+      case 'fight':
+        return <span className="text-red-300">???</span>;
+      case 'mana':
+        return <span className="text-cyan-300">??</span>;
+      default:
+        return null;
+    }
+  };
+
+  const getCardTypeClass = (type) => {
+    switch (type) {
+      case 'character':
+        return 'card-type-character';
+      case 'healer':
+        return 'card-type-healer';
+      case 'watcher':
+        return 'card-type-watcher';
+      default:
+        return 'card-type-blizzard';
     }
   };
 
@@ -265,11 +282,11 @@ export function GameBoard({ gameState, privateState, playerName, room, socket, o
   const healerDiscardPile = privateState?.healerRecycleChoice?.discardPile || [];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-snow-dark via-snow-blue to-[#0f0f23] p-2 lg:p-4">
+    <div className="min-h-screen p-2 lg:p-4 game-backdrop">
       {/* Healer回收选择弹窗 */}
       {needsHealerRecycle && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-gradient-to-br from-green-900/90 to-green-800/90 backdrop-blur-md rounded-2xl p-6 border-2 border-green-500/50 max-w-md w-full shadow-2xl">
+          <div className="panel-frost rounded-2xl p-6 border border-green-500/40 max-w-md w-full shadow-2xl">
             <h2 className="text-2xl font-bold text-green-300 mb-2 flex items-center gap-2">
               <span>💚</span> 治疗者回收
             </h2>
@@ -289,18 +306,10 @@ export function GameBoard({ gameState, privateState, playerName, room, socket, o
                   <button
                     key={card.id}
                     onClick={() => toggleHealerRecycleCard(card.id)}
-                    className={`aspect-[2/3] rounded-lg border-2 flex flex-col items-center justify-center text-xs font-bold transition-all ${
+                    className={`aspect-[2/3] rounded-lg card-face ${getCardTypeClass(card.type)} text-white flex flex-col items-center justify-center text-xs font-bold transition-all ${
                       healerRecycleCards.includes(card.id)
                         ? 'ring-2 ring-green-400 scale-105 shadow-lg shadow-green-400/30'
                         : ''
-                    } ${
-                      card.type === 'character'
-                        ? 'bg-gradient-to-br from-[#2d1b4e] to-[#1a0f2e] border-yellow-500/70 text-white'
-                        : card.type === 'healer'
-                        ? 'bg-gradient-to-br from-green-800 to-green-900 border-green-500 text-white'
-                        : card.type === 'watcher'
-                        ? 'bg-gradient-to-br from-purple-800 to-purple-900 border-purple-500 text-white'
-                        : 'bg-gradient-to-br from-blue-800 to-blue-900 border-blue-500 text-white'
                     } hover:scale-105 cursor-pointer active:scale-95`}
                   >
                     <span className="text-[10px] opacity-70">
@@ -336,7 +345,7 @@ export function GameBoard({ gameState, privateState, playerName, room, socket, o
       )}
 
       {/* 顶部信息栏 */}
-      <header className="bg-white/10 backdrop-blur-md rounded-xl p-3 lg:p-4 mb-3 lg:mb-4 border border-white/20">
+      <header className="panel-frost rounded-xl p-3 lg:p-4 mb-3 lg:mb-4">
         <div className="flex justify-between items-center flex-wrap gap-2">
           <div>
             <h1 className="font-game text-xl lg:text-2xl font-bold text-snow-ice">SnowTime</h1>
@@ -359,7 +368,10 @@ export function GameBoard({ gameState, privateState, playerName, room, socket, o
               </div>
             )}
             <div className="text-right text-xs lg:text-sm">
-              <p className="text-white/60">剩余果实: <span className="text-snow-fruit font-bold">{gameState.remainingFruits}</span></p>
+              <p className="text-white/60 flex items-center justify-end gap-2">
+                <span className="fruit-token" />
+                <span className="text-snow-fruit font-bold">{gameState.remainingFruits}</span>
+              </p>
               <p className="text-white/40">{gameState.roomCode}</p>
             </div>
           </div>
@@ -381,7 +393,7 @@ export function GameBoard({ gameState, privateState, playerName, room, socket, o
 
       {/* 规则说明面板 */}
       {showRules && (
-        <div className="mb-3 bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/20 text-sm">
+        <div className="mb-3 panel-frost rounded-xl p-4 text-sm">
           <h3 className="font-semibold text-snow-gold mb-2">游戏规则</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-white/70">
             <div>
@@ -406,9 +418,9 @@ export function GameBoard({ gameState, privateState, playerName, room, socket, o
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 lg:gap-4">
 
         {/* 左侧：计分轨道和玩家列表 */}
-        <div className="lg:col-span-3 space-y-3">
+        <div className="lg:col-span-3 space-y-3 reveal-item" style={{ '--reveal-delay': '60ms' }}>
           {/* 玩家列表 */}
-          <div className="bg-white/10 backdrop-blur-md rounded-xl p-3 border border-white/20">
+          <div className="panel-frost rounded-xl p-3">
             <h2 className="font-semibold mb-2 text-snow-gold text-sm">玩家</h2>
             <div className="space-y-1.5">
               {gameState.players.map((player, index) => (
@@ -440,7 +452,7 @@ export function GameBoard({ gameState, privateState, playerName, room, socket, o
           </div>
 
           {/* 计分轨道 - 垂直30格 */}
-          <div className="bg-white/10 backdrop-blur-md rounded-xl p-3 border border-white/20">
+          <div className="panel-frost rounded-xl p-3">
             <h2 className="font-semibold mb-2 text-snow-gold text-sm">计分轨道</h2>
             <div className="space-y-0.5 max-h-[400px] overflow-y-auto">
               {gameState.track.slice().reverse().map((space, index) => {
@@ -484,8 +496,8 @@ export function GameBoard({ gameState, privateState, playerName, room, socket, o
         </div>
 
         {/* 中间：神圣树 - 7层枯树 */}
-        <div className="lg:col-span-5 lg:pb-0 pb-[45vh]">
-          <div className="bg-white/10 backdrop-blur-md rounded-xl p-3 lg:p-4 border border-white/20 h-full max-h-[60vh] lg:max-h-none overflow-y-auto">
+        <div className="lg:col-span-5 lg:pb-0 pb-[45vh] reveal-item" style={{ '--reveal-delay': '140ms' }}>
+          <div className="panel-board rounded-xl p-3 lg:p-4 h-full max-h-[60vh] lg:max-h-none overflow-y-auto">
             <h2 className="font-semibold mb-3 text-snow-gold text-sm flex items-center justify-between">
               <span>神圣树</span>
               <span className="text-xs text-white/40">Level 7 → 1</span>
@@ -507,22 +519,31 @@ export function GameBoard({ gameState, privateState, playerName, room, socket, o
                     </div>
                     {player.discardPile?.length > 0 && (
                       <div className="flex flex-wrap gap-1">
-                        {player.discardPile.map((card, i) => (
-                          <div
-                            key={i}
-                            className={`w-7 h-9 rounded border flex items-center justify-center text-xs font-bold ${
-                              card.type === 'character'
-                                ? 'bg-purple-900/50 border-yellow-500/30 text-white'
-                                : card.type === 'healer'
-                                ? 'bg-green-800/50 border-green-500/30 text-white'
-                                : card.type === 'watcher'
-                                ? 'bg-purple-800/50 border-purple-500/30 text-white'
-                                : 'bg-blue-800/50 border-blue-500/30 text-white'
-                            }`}
-                          >
-                            {card.type === 'character' ? card.value : card.type === 'healer' ? '💚' : card.type === 'watcher' ? '👁️' : '❄️'}
-                          </div>
-                        ))}
+                        {player.discardPile.map((card, i) => {
+                          const roleImage = card.roleImage;
+                          return (
+                            <div
+                              key={i}
+                              className={`w-7 h-9 rounded card-face ${getCardTypeClass(card.type)} text-white flex items-center justify-center text-xs font-bold relative overflow-hidden`}
+                            >
+                              {/* 角色背景图 */}
+                              {roleImage && card.type === 'character' && (
+                                <div
+                                  className="absolute inset-0"
+                                  style={{
+                                    backgroundImage: `url(${roleImage})`,
+                                    backgroundSize: 'cover',
+                                    backgroundPosition: 'center',
+                                    opacity: 0.4,
+                                  }}
+                                />
+                              )}
+                              <span className="relative z-10">
+                                {card.type === 'character' ? card.value : card.type === 'healer' ? '💚' : card.type === 'watcher' ? '👁️' : '❄️'}
+                              </span>
+                            </div>
+                          );
+                        })}
                       </div>
                     )}
                   </div>
@@ -559,7 +580,7 @@ export function GameBoard({ gameState, privateState, playerName, room, socket, o
                   {/* 果实区域 */}
                   <div className="flex-1 flex items-center gap-1 min-h-[32px]">
                     {Array.from({ length: level.fruits }).map((_, i) => (
-                      <span key={i} className="text-xl animate-pulse">🍎</span>
+                      <span key={i} className="fruit-token fruit-animate" />
                     ))}
                     {level.fruits === 0 && level.level !== 7 && (
                       <span className="text-white/20 text-xs">无果实</span>
@@ -568,20 +589,36 @@ export function GameBoard({ gameState, privateState, playerName, room, socket, o
 
                   {/* 角色区域 */}
                   <div className="flex items-center gap-1">
-                    {displayChars.map((char, i) => (
-                      <div
-                        key={i}
-                        className="w-10 h-10 rounded-lg flex flex-col items-center justify-center text-sm font-bold shadow-lg border-2"
-                        style={{
-                          backgroundColor: `${char.color}dd`,
-                          borderColor: char.color,
-                          boxShadow: `0 0 10px ${char.color}66`
-                        }}
-                      >
-                        <span className="text-xs opacity-80">角色</span>
-                        <span>{char.cardValue}</span>
-                      </div>
-                    ))}
+                    {displayChars.map((char, i) => {
+                      // 获取角色的roleImage，优先从char本身获取，否则从playerMap获取
+                      const player = playerMap.get(char.playerId);
+                      const roleImage = char.roleImage || player?.roleImage;
+                      return (
+                        <div
+                          key={i}
+                          className="w-10 h-10 rounded-lg flex flex-col items-center justify-center text-sm font-bold shadow-lg border-2 relative overflow-hidden"
+                          style={{
+                            backgroundColor: `${char.color}dd`,
+                            borderColor: char.color,
+                            boxShadow: `0 0 10px ${char.color}66`
+                          }}
+                        >
+                          {/* 角色背景图 */}
+                          {roleImage && (
+                            <div
+                              className="absolute inset-0"
+                              style={{
+                                backgroundImage: `url(${roleImage})`,
+                                backgroundSize: 'cover',
+                                backgroundPosition: 'center',
+                                opacity: 0.5,
+                              }}
+                            />
+                          )}
+                          <span className="text-xs opacity-80 relative z-10">{char.cardValue}</span>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               );
@@ -591,9 +628,9 @@ export function GameBoard({ gameState, privateState, playerName, room, socket, o
         </div>
 
         {/* 右侧：手牌和控制 */}
-        <div className="lg:col-span-4 space-y-3">
+        <div className="lg:col-span-4 space-y-3 reveal-item" style={{ '--reveal-delay': '220ms' }}>
           {/* 手牌 - 移动端固定底部显示 */}
-          <div className="bg-white/10 backdrop-blur-md rounded-xl p-3 border border-white/20 lg:static fixed bottom-0 left-0 right-0 lg:mb-0 mb-0 z-50 lg:z-auto max-h-[40vh] lg:max-h-none overflow-y-auto" style={{ marginBottom: 'env(safe-area-inset-bottom, 0px)' }}>
+          <div className="panel-frost rounded-xl p-3 lg:static fixed bottom-0 left-0 right-0 lg:mb-0 mb-0 z-50 lg:z-auto max-h-[40vh] lg:max-h-none overflow-y-auto" style={{ marginBottom: 'env(safe-area-inset-bottom, 0px)' }}>
             <div className="flex items-center justify-between mb-3">
               <h2 className="font-semibold text-snow-gold text-sm">
                 手牌 ({privateState?.hand?.length || 0})
@@ -629,15 +666,7 @@ export function GameBoard({ gameState, privateState, playerName, room, socket, o
               <div className="flex flex-col items-center mb-3 p-2 bg-white/5 rounded-lg border border-white/10">
                 <p className="text-white/60 text-xs mb-1">已出牌:</p>
                 <div
-                  className={`aspect-[2/3] w-16 rounded-lg border-2 flex flex-col items-center justify-center text-xs font-bold ${
-                    playedCardForDisplay.type === 'character'
-                      ? 'bg-gradient-to-br from-[#2d1b4e] to-[#1a0f2e] border-yellow-500/70 text-white'
-                      : playedCardForDisplay.type === 'healer'
-                      ? 'bg-gradient-to-br from-green-800 to-green-900 border-green-500 text-white'
-                      : playedCardForDisplay.type === 'watcher'
-                      ? 'bg-gradient-to-br from-purple-800 to-purple-900 border-purple-500 text-white'
-                      : 'bg-gradient-to-br from-blue-800 to-blue-900 border-blue-500 text-white'
-                  }`}
+                  className={`aspect-[2/3] w-16 rounded-lg card-face ${getCardTypeClass(playedCardForDisplay.type)} flex flex-col items-center justify-center text-xs font-bold text-white`}
                 >
                   <span className="text-[10px] opacity-70">
                     {playedCardForDisplay.type === 'character' ? '角色' : playedCardForDisplay.type === 'healer' ? '治疗' : playedCardForDisplay.type === 'watcher' ? '守望' : '暴雪'}
@@ -654,6 +683,7 @@ export function GameBoard({ gameState, privateState, playerName, room, socket, o
                 <div className="grid grid-cols-2 gap-2">
                   {revealedPlayedCards.map((played) => {
                     const player = playerMap.get(played.playerId);
+                    const roleImage = played.roleImage || player?.roleImage;
                     return (
                       <div key={played.playerId} className="flex items-center gap-2 bg-black/20 rounded p-2">
                         <div
@@ -664,23 +694,29 @@ export function GameBoard({ gameState, privateState, playerName, room, socket, o
                           {player?.name || '玩家'}
                         </span>
                         <div
-                          className={`ml-auto w-8 h-11 rounded border flex items-center justify-center text-xs font-bold ${
-                            played.cardType === 'character'
-                              ? 'bg-gradient-to-br from-[#2d1b4e] to-[#1a0f2e] border-yellow-500/70 text-white'
-                              : played.cardType === 'healer'
-                              ? 'bg-gradient-to-br from-green-800 to-green-900 border-green-500 text-white'
-                              : played.cardType === 'watcher'
-                              ? 'bg-gradient-to-br from-purple-800 to-purple-900 border-purple-500 text-white'
-                              : 'bg-gradient-to-br from-blue-800 to-blue-900 border-blue-500 text-white'
-                          }`}
+                          className={`ml-auto w-8 h-11 rounded card-face ${getCardTypeClass(played.cardType)} flex items-center justify-center text-xs font-bold text-white relative overflow-hidden`}
                         >
-                          {played.cardType === 'character'
-                            ? played.cardValue
-                            : played.cardType === 'healer'
-                            ? '💚'
-                            : played.cardType === 'watcher'
-                            ? '👁️'
-                            : '❄️'}
+                          {/* 角色背景图 */}
+                          {roleImage && played.cardType === 'character' && (
+                            <div
+                              className="absolute inset-0"
+                              style={{
+                                backgroundImage: `url(${roleImage})`,
+                                backgroundSize: 'cover',
+                                backgroundPosition: 'center',
+                                opacity: 0.4,
+                              }}
+                            />
+                          )}
+                          <span className="relative z-10">
+                            {played.cardType === 'character'
+                              ? played.cardValue
+                              : played.cardType === 'healer'
+                              ? '💚'
+                              : played.cardType === 'watcher'
+                              ? '👁️'
+                              : '❄️'}
+                          </span>
                         </div>
                       </div>
                     );
@@ -715,7 +751,7 @@ export function GameBoard({ gameState, privateState, playerName, room, socket, o
                         }
                       }}
                       disabled={!isClickable}
-                      className={`aspect-[2/3] rounded-lg border-2 flex flex-col items-center justify-center text-xs font-bold transition-all min-h-[60px] sm:min-h-[80px] ${
+                      className={`aspect-[2/3] rounded-lg card-face ${getCardTypeClass(card.type)} text-white flex flex-col items-center justify-center text-xs font-bold transition-all min-h-[60px] sm:min-h-[80px] relative ${
                         selectedCard === card.id || watcherSelectedCard === card.id
                           ? 'ring-2 ring-snow-gold scale-105 shadow-lg shadow-snow-gold/30'
                           : ''
@@ -723,15 +759,8 @@ export function GameBoard({ gameState, privateState, playerName, room, socket, o
                         isClickable
                           ? 'hover:scale-105 cursor-pointer active:scale-95'
                           : 'opacity-50 cursor-not-allowed'
-                      } ${
-                        card.type === 'character'
-                          ? 'bg-gradient-to-br from-[#2d1b4e] to-[#1a0f2e] border-yellow-500/70 text-white'
-                          : card.type === 'healer'
-                          ? 'bg-gradient-to-br from-green-800 to-green-900 border-green-500 text-white'
-                          : card.type === 'watcher'
-                          ? 'bg-gradient-to-br from-purple-800 to-purple-900 border-purple-500 text-white'
-                          : 'bg-gradient-to-br from-blue-800 to-blue-900 border-blue-500 text-white'
                       }`}
+                      style={card.roleImage && card.type === 'character' ? { backgroundImage: `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url(${card.roleImage})`, backgroundSize: 'cover', backgroundPosition: 'center' } : undefined}
                     >
                       <span className="text-[10px] opacity-70 pointer-events-none">
                         {card.type === 'character' ? '角色' : card.type === 'healer' ? '治疗' : card.type === 'watcher' ? '守望' : '暴雪'}
@@ -797,7 +826,7 @@ export function GameBoard({ gameState, privateState, playerName, room, socket, o
 
           {/* 房主控制 */}
           {isHost && (
-            <div className="bg-gradient-to-br from-yellow-500/10 to-orange-500/10 backdrop-blur-md rounded-xl p-3 border border-yellow-500/30">
+            <div className="panel-frost rounded-xl p-3 border border-yellow-500/30">
               <h2 className="font-semibold mb-3 text-snow-gold text-sm flex items-center gap-2">
                 <span>👑</span> 房主控制
               </h2>
@@ -860,7 +889,7 @@ export function GameBoard({ gameState, privateState, playerName, room, socket, o
 
           {/* 结算日志 */}
           {resolutionLog.length > 0 && (
-            <div className="bg-white/10 backdrop-blur-md rounded-xl p-3 border border-white/20 max-h-40 overflow-y-auto">
+            <div className="panel-frost rounded-xl p-3 max-h-40 overflow-y-auto">
               <h2 className="font-semibold mb-2 text-snow-gold text-sm">结算日志</h2>
               <div className="space-y-1 text-xs">
                 {resolutionLog.map((log, i) => (

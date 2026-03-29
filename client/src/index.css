@@ -1,16 +1,22 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Cinzel:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Marcellus&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Marcellus', serif;
   line-height: 1.5;
   font-weight: 400;
   color-scheme: dark;
   color: rgba(255, 255, 255, 0.87);
   background-color: #1a1a2e;
+  --board-image: url('/assets/board.png');
+  --card-image: url('/assets/card-sheet.png');
+  --fruit-image: url('/assets/fruit.png');
+  --frost-surface: rgba(8, 16, 32, 0.62);
+  --frost-border: rgba(180, 220, 255, 0.28);
+  --ice-glow: rgba(135, 206, 235, 0.35);
 }
 
 * {
@@ -22,7 +28,10 @@
 body {
   min-width: 320px;
   min-height: 100vh;
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f0f23 100%);
+  background:
+    radial-gradient(circle at 15% 15%, rgba(140, 200, 255, 0.2), transparent 45%),
+    radial-gradient(circle at 85% 10%, rgba(70, 120, 200, 0.2), transparent 40%),
+    linear-gradient(135deg, #0b1424 0%, #0f1b33 50%, #0b0f1d 100%);
 }
 
 #root {
@@ -32,6 +41,45 @@ body {
 /* 游戏标题字体 */
 .font-game {
   font-family: 'Cinzel', serif;
+}
+
+.game-backdrop {
+  background:
+    radial-gradient(circle at 20% 20%, rgba(140, 200, 255, 0.16), transparent 45%),
+    radial-gradient(circle at 85% 5%, rgba(80, 140, 220, 0.2), transparent 40%),
+    linear-gradient(135deg, rgba(12, 20, 38, 0.9) 0%, rgba(11, 18, 32, 0.95) 100%);
+}
+
+.panel-frost {
+  background: var(--frost-surface);
+  border: 1px solid var(--frost-border);
+  box-shadow: 0 16px 40px rgba(5, 10, 20, 0.55), 0 0 30px rgba(135, 206, 235, 0.1);
+  backdrop-filter: blur(16px);
+}
+
+.panel-board {
+  position: relative;
+  overflow: hidden;
+  background-image:
+    linear-gradient(135deg, rgba(8, 14, 26, 0.75), rgba(12, 18, 34, 0.55)),
+    var(--board-image);
+  background-size: cover;
+  background-position: center;
+  border: 1px solid rgba(180, 220, 255, 0.18);
+  box-shadow: 0 20px 50px rgba(5, 10, 20, 0.65), inset 0 0 40px rgba(8, 12, 20, 0.55);
+}
+
+.panel-board::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, rgba(135, 206, 235, 0.08), transparent 45%);
+  pointer-events: none;
+}
+
+.panel-board > * {
+  position: relative;
+  z-index: 1;
 }
 
 /* 卡牌悬停效果 */
@@ -46,20 +94,20 @@ body {
 
 /* 按钮样式 */
 .btn-primary {
-  @apply px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg font-semibold
-         transition-all duration-200 hover:from-blue-500 hover:to-blue-600 hover:shadow-lg
+  @apply px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-500 text-white rounded-lg font-semibold
+         transition-all duration-200 hover:from-blue-400 hover:to-cyan-400 hover:shadow-lg
          active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed;
 }
 
 .btn-secondary {
-  @apply px-6 py-3 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-lg font-semibold
-         transition-all duration-200 hover:from-purple-500 hover:to-purple-600 hover:shadow-lg
+  @apply px-6 py-3 bg-gradient-to-r from-slate-600 to-slate-700 text-white rounded-lg font-semibold
+         transition-all duration-200 hover:from-slate-500 hover:to-slate-600 hover:shadow-lg
          active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed;
 }
 
 .btn-gold {
-  @apply px-6 py-3 bg-gradient-to-r from-yellow-600 to-yellow-700 text-white rounded-lg font-semibold
-         transition-all duration-200 hover:from-yellow-500 hover:to-yellow-600 hover:shadow-lg
+  @apply px-6 py-3 bg-gradient-to-r from-amber-400 to-yellow-500 text-white rounded-lg font-semibold
+         transition-all duration-200 hover:from-amber-300 hover:to-yellow-400 hover:shadow-lg
          active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed;
 }
 
@@ -86,7 +134,7 @@ body {
 /* 输入框样式 */
 input, textarea {
   @apply bg-white/10 border border-white/20 rounded-lg px-4 py-2 text-white placeholder-white/50
-         focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400/30
+         focus:outline-none focus:border-cyan-300 focus:ring-2 focus:ring-cyan-300/30
          transition-all duration-200;
 }
 
@@ -130,6 +178,108 @@ input, textarea {
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.1),
     0 4px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* 角色背景图片样式 */
+.card-role-bg {
+  background-image: var(--role-image, none), var(--card-image);
+  background-size: var(--role-size, cover), cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* 角色图片在卡牌上的叠加层 */
+.card-role-overlay {
+  position: absolute;
+  inset: 0;
+  background-image: var(--role-image);
+  background-size: var(--role-size, contain);
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: var(--role-opacity, 0.9);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* 手牌中角色牌的背景 */
+.card-face.character .card-role-overlay {
+  --role-size: 85%;
+  --role-opacity: 0.8;
+}
+
+/* 树上角色的小尺寸背景 */
+.tree-char-bg {
+  background-image: var(--role-image);
+  background-size: cover;
+  background-position: center;
+}
+
+.card-face {
+  position: relative;
+  background-image: var(--card-image);
+  background-size: cover;
+  background-position: center;
+  border: 2px solid rgba(212, 175, 55, 0.45);
+  box-shadow: 0 8px 18px rgba(6, 10, 18, 0.55);
+  overflow: hidden;
+}
+
+.card-face::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--card-tint, rgba(20, 28, 44, 0.55));
+  mix-blend-mode: screen;
+}
+
+.card-face::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.18), transparent 40%);
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.card-face > * {
+  position: relative;
+  z-index: 1;
+}
+
+.card-type-character { --card-tint: rgba(82, 55, 130, 0.55); }
+.card-type-healer { --card-tint: rgba(40, 130, 80, 0.55); }
+.card-type-watcher { --card-tint: rgba(110, 60, 150, 0.55); }
+.card-type-blizzard { --card-tint: rgba(60, 110, 160, 0.55); }
+
+.fruit-token {
+  display: inline-block;
+  width: 22px;
+  height: 22px;
+  background-image: var(--fruit-image);
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  filter: drop-shadow(0 4px 6px rgba(10, 16, 30, 0.6));
+}
+
+.fruit-token.lg {
+  width: 28px;
+  height: 28px;
+}
+
+.fruit-token.xl {
+  width: 34px;
+  height: 34px;
+}
+
+.reveal-item {
+  animation: reveal-up 0.45s ease-out both;
+  animation-delay: var(--reveal-delay, 0ms);
+}
+
+@keyframes reveal-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 /* 果实动画 */

@@ -14,6 +14,7 @@ class DeckManager {
   createPlayerDeck(playerId, colorIndex) {
     const hand = [];
     const color = this.getPlayerColor(colorIndex);
+    const roleImage = this.getRoleImage(colorIndex);
 
     // 7张角色牌 (数字1-7)
     for (let i = 1; i <= 7; i++) {
@@ -23,6 +24,7 @@ class DeckManager {
         value: i,
         ownerId: playerId,
         color: color,
+        roleImage: roleImage,
       });
     }
 
@@ -32,6 +34,7 @@ class DeckManager {
       type: CARD_TYPES.HEALER,
       ownerId: playerId,
       color: color,
+      roleImage: roleImage,
     });
 
     hand.push({
@@ -39,6 +42,7 @@ class DeckManager {
       type: CARD_TYPES.WATCHER,
       ownerId: playerId,
       color: color,
+      roleImage: roleImage,
     });
 
     hand.push({
@@ -46,6 +50,7 @@ class DeckManager {
       type: CARD_TYPES.BLIZZARD,
       ownerId: playerId,
       color: color,
+      roleImage: roleImage,
     });
 
     // 初始化该玩家的弃牌堆
@@ -58,6 +63,13 @@ class DeckManager {
   getPlayerColor(index) {
     const colors = ['#FF6B6B', '#4ECDC4', '#FFE66D', '#95E1D3', '#F38181'];
     return colors[index % colors.length];
+  }
+
+  // 获取玩家角色图片路径
+  getRoleImage(index) {
+    const roleCount = 5;
+    const roleIndex = (index % roleCount) + 1;
+    return `/assets/role${roleIndex}.png`;
   }
 
   // 弃牌
