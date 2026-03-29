@@ -315,7 +315,9 @@ class GameState {
     }
 
     // Healer卡回到手牌
-    this.returnHealerCardToHand(playerId);
+    if (healerChoice.healerCard) {
+      player.hand.push(healerChoice.healerCard);
+    }
 
     // 标记已完成选择
     healerChoice.needsChoice = false;
@@ -526,9 +528,13 @@ class GameState {
         });
       } else {
         // 弃牌堆有超过2张牌，需要玩家选择回收哪些牌
+        // 先将Healer卡从playedCards中移除，保存到healerRecycleChoices中
+        const healerCard = this.roundState.playedCards.get(playerId);
+        
         this.roundState.healerRecycleChoices.set(playerId, {
           needsChoice: true,
           selectedCards: [],
+          healerCard: healerCard, // 保存Healer卡，待选择完成后回收
           discardPile: discardPile.map(card => ({
             id: card.id,
             type: card.type,
@@ -536,6 +542,9 @@ class GameState {
             roleImage: card.roleImage || null,
           }))
         });
+
+        // 从playedCards中移除Healer卡
+        this.roundState.playedCards.delete(playerId);
 
         needsHealerChoice = true;
 
