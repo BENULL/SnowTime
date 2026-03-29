@@ -22,7 +22,7 @@ export default {
       },
       fontFamily: {
         'game': ['Cinzel', 'serif'],
-        'body': ['Inter', 'sans-serif'],
+        'body': ['Marcellus', 'serif'],
       },
     },
   },

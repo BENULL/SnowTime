@@ -15,6 +15,8 @@ export function GameBoard({ gameState, privateState, playerName, room, socket, o
   const [cardPlayError, setCardPlayError] = useState('');
   const [playedCardForDisplay, setPlayedCardForDisplay] = useState(null);
   const [healerRecycleCards, setHealerRecycleCards] = useState([]); // 选中要回收的牌
+  const [isRolling, setIsRolling] = useState(false); // 掷骰子动画状态
+  const [rollingDice, setRollingDice] = useState([1, 2]); // 动画中显示的骰子值
 
   if (!gameState) {
     return (
@@ -76,6 +78,21 @@ export function GameBoard({ gameState, privateState, playerName, room, socket, o
       }
     }
   }, [gameState?.roundState?.playedCards, currentPlayer?.id]);
+
+  // 监听掷骰子结果，触发动画
+  useEffect(() => {
+    if (gameState?.currentPhase === 'roll_dice' && gameState?.roundState?.diceResult?.length > 0) {
+      // 触发掷骰子动画
+      setIsRolling(true);
+      
+      // 动画持续时间后停止
+      const timer = setTimeout(() => {
+        setIsRolling(false);
+      }, 800);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [gameState?.currentPhase, gameState?.roundState?.diceResult]);
 
   // 当阶段从 play_cards/watcher_play/resolve 变为其他阶段时，清除已出牌显示
   useEffect(() => {
@@ -354,15 +371,17 @@ export function GameBoard({ gameState, privateState, playerName, room, socket, o
             </p>
           </div>
           <div className="flex items-center gap-4">
-            {/* 骰子结果（顶部显示） */}
+            {/* 掷骰子结果显示 */}
             {gameState.roundState?.diceResult?.length > 0 && (
               <div className="flex gap-2">
                 {gameState.roundState.diceResult.map((die, i) => (
                   <div
                     key={i}
-                    className="w-8 h-8 lg:w-10 lg:h-10 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-lg flex items-center justify-center text-lg lg:text-xl font-bold shadow-lg"
+                    className={`w-8 h-8 lg:w-10 lg:h-10 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-lg flex items-center justify-center text-lg lg:text-xl font-bold shadow-lg transition-all ${
+                      isRolling ? 'dice-rolling dice-glow' : ''
+                    }`}
                   >
-                    {die}
+                    {isRolling ? Math.floor(Math.random() * 6) + 1 : die}
                   </div>
                 ))}
               </div>
@@ -831,6 +850,23 @@ export function GameBoard({ gameState, privateState, playerName, room, socket, o
                 <span>👑</span> 房主控制
               </h2>
               <div className="space-y-2">
+                {gameState.currentPhase === 'roll_dice' && (
+                  <button
+                    onClick={() => {
+                      setIsRolling(true);
+                      socket.emit('game:roll_dice', null, (response) => {
+                        if (!response || !response.success) {
+                          setCardPlayError(response?.error || '掷骰子失败');
+                        }
+                        setTimeout(() => setIsRolling(false), 800);
+                      });
+                    }}
+                    disabled={isRolling}
+                    className="btn-gold w-full text-sm animate-pulse-glow disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    🎲 {isRolling ? '掷骰子中...' : '掷骰子'}
+                  </button>
+                )}
                 {gameState.currentPhase === 'play_cards' && (
                   <div className="bg-white/5 rounded-lg p-2">
                     <div className="flex justify-between text-xs mb-1">

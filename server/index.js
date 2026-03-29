@@ -235,6 +235,36 @@ io.on('connection', (socket) => {
 
   // ========== 游戏相关事件 ==========
 
+  // 房主掷骰子
+  socket.on('game:roll_dice', (data, callback) => {
+    const ctx = getRoomContext(socket, { requireGame: true });
+    if (ctx.error) {
+      replyError(callback, ctx.error);
+      return;
+    }
+
+    const { roomCode, gameState, room } = ctx;
+
+    // 检查是否是房主
+    const isHost = room.players[0].id === socket.id;
+    if (!isHost) {
+      replyError(callback, '只有房主可以掷骰子');
+      return;
+    }
+
+    // 检查是否在掷骰子阶段
+    if (gameState.currentPhase !== GAME_PHASES.ROLL_DICE) {
+      replyError(callback, '不在掷骰子阶段');
+      return;
+    }
+
+    // 执行掷骰子
+    gameState.rollDiceAndPlaceFruits();
+    broadcastGameState(roomCode);
+
+    if (typeof callback === 'function') callback({ success: true });
+  });
+
   // 玩家出牌
   socket.on('game:play_card', (data, callback) => {
     const { cardId } = data || {};

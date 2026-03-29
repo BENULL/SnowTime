@@ -21,8 +21,8 @@ export function GameOver({ winner, players, onReturn }) {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-snow-dark via-snow-blue to-[#0f0f23]">
-      <div className="w-full max-w-lg animate-fade-in">
+    <div className="min-h-screen flex items-center justify-center p-4 game-backdrop">
+      <div className="w-full max-w-lg animate-fade-in reveal-item" style={{ '--reveal-delay': '60ms' }}>
         {/* 胜利标题 */}
         <div className="text-center mb-8">
           <div className="text-6xl mb-4">❄️</div>
@@ -50,7 +50,7 @@ export function GameOver({ winner, players, onReturn }) {
         </div>
 
         {/* 排名列表 */}
-        <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 shadow-2xl">
+        <div className="panel-frost rounded-2xl p-6 shadow-2xl">
           <h2 className="text-xl font-semibold mb-4 text-center text-snow-ice">最终排名</h2>
 
           <div className="space-y-3">

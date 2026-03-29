@@ -292,6 +292,29 @@ input, textarea {
   animation: fruit-bounce 1s ease-in-out infinite;
 }
 
+/* 骰子滚动动画 */
+@keyframes dice-roll {
+  0% { transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg); }
+  25% { transform: rotateX(720deg) rotateY(360deg) rotateZ(180deg); }
+  50% { transform: rotateX(1080deg) rotateY(720deg) rotateZ(360deg); }
+  75% { transform: rotateX(1440deg) rotateY(1080deg) rotateZ(540deg); }
+  100% { transform: rotateX(1800deg) rotateY(1440deg) rotateZ(720deg); }
+}
+
+.dice-rolling {
+  animation: dice-roll 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* 骰子闪光效果 */
+@keyframes dice-glow {
+  0%, 100% { box-shadow: 0 0 10px rgba(135, 206, 235, 0.3), 0 0 20px rgba(135, 206, 235, 0.1); }
+  50% { box-shadow: 0 0 20px rgba(135, 206, 235, 0.8), 0 0 40px rgba(135, 206, 235, 0.4); }
+}
+
+.dice-glow {
+  animation: dice-glow 0.8s ease-in-out;
+}
+
 /* 滚动条优化 */
 ::-webkit-scrollbar {
   width: 6px;

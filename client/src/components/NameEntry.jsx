@@ -18,8 +18,8 @@ export function NameEntry({ onSubmit }) {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <div className="w-full max-w-md animate-fade-in">
+    <div className="min-h-screen flex items-center justify-center p-4 game-backdrop">
+      <div className="w-full max-w-md animate-fade-in reveal-item" style={{ '--reveal-delay': '80ms' }}>
         <div className="text-center mb-8">
           <h1 className="font-game text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-snow-ice to-blue-300 mb-2">
             SnowTime
@@ -27,7 +27,7 @@ export function NameEntry({ onSubmit }) {
           <p className="text-white/60 text-lg">冰雪奇缘桌游</p>
         </div>
 
-        <div className="bg-white/10 backdrop-blur-md rounded-2xl p-8 border border-white/20 shadow-2xl">
+        <div className="panel-frost rounded-2xl p-8 shadow-2xl">
           <h2 className="text-2xl font-semibold text-center mb-6">开始游戏</h2>
 
           <form onSubmit={handleSubmit} className="space-y-4">

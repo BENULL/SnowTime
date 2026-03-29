@@ -82,8 +82,8 @@ function App() {
   // 连接中
   if (!isConnected) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4">
-        <div className="text-center">
+      <div className="min-h-screen flex items-center justify-center p-4 game-backdrop">
+        <div className="text-center panel-frost rounded-2xl px-8 py-6">
           <div className="w-16 h-16 border-4 border-snow-ice border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
           <p className="text-white/60">连接服务器...</p>
           {socketError && (

@@ -197,7 +197,7 @@ export function Lobby({
   // 主菜单
   if (view === 'menu') {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4">
+      <div className="min-h-screen flex items-center justify-center p-4 game-backdrop">
         <div className="w-full max-w-md animate-fade-in">
           <div className="text-center mb-8">
             <h1 className="font-game text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-snow-ice to-blue-300 mb-2">
@@ -206,7 +206,7 @@ export function Lobby({
             <p className="text-white/60 text-lg">欢迎，{playerName}</p>
           </div>
 
-          <div className="bg-white/10 backdrop-blur-md rounded-2xl p-8 border border-white/20 shadow-2xl space-y-4">
+          <div className="panel-frost rounded-2xl p-8 shadow-2xl space-y-4 reveal-item" style={{ '--reveal-delay': '80ms' }}>
             <button
               onClick={handleCreateRoom}
               className="btn-primary w-full text-lg"
@@ -240,9 +240,9 @@ export function Lobby({
   // 加入房间表单
   if (view === 'join') {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4">
+      <div className="min-h-screen flex items-center justify-center p-4 game-backdrop">
         <div className="w-full max-w-md animate-fade-in">
-          <div className="bg-white/10 backdrop-blur-md rounded-2xl p-8 border border-white/20 shadow-2xl">
+          <div className="panel-frost rounded-2xl p-8 shadow-2xl reveal-item" style={{ '--reveal-delay': '80ms' }}>
             <h2 className="text-2xl font-semibold text-center mb-6">加入房间</h2>
 
             <form onSubmit={handleJoinRoom} className="space-y-4">
@@ -294,7 +294,7 @@ export function Lobby({
   if (view === 'create') {
     if (loading) {
       return (
-        <div className="min-h-screen flex items-center justify-center p-4">
+        <div className="min-h-screen flex items-center justify-center p-4 game-backdrop">
           <div className="text-center">
             <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
             <p className="text-white/60">创建房间中...</p>
@@ -304,9 +304,9 @@ export function Lobby({
     }
     // 如果不在loading但view还是create，返回菜单
     return (
-      <div className="min-h-screen flex items-center justify-center p-4">
+      <div className="min-h-screen flex items-center justify-center p-4 game-backdrop">
         <div className="w-full max-w-md animate-fade-in">
-          <div className="bg-white/10 backdrop-blur-md rounded-2xl p-8 border border-white/20 shadow-2xl text-center">
+          <div className="panel-frost rounded-2xl p-8 shadow-2xl text-center reveal-item" style={{ '--reveal-delay': '80ms' }}>
             <p className="text-white/60 mb-4">创建房间失败，请重试</p>
             {error && (
               <p className="text-red-400 text-sm mb-4">{error}</p>
@@ -331,9 +331,9 @@ export function Lobby({
     const canStart = isHost && room.players.length >= room.minPlayers && allReady;
 
     return (
-      <div className="min-h-screen flex items-center justify-center p-4">
+      <div className="min-h-screen flex items-center justify-center p-4 game-backdrop">
         <div className="w-full max-w-lg animate-fade-in">
-          <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 shadow-2xl">
+          <div className="panel-frost rounded-2xl p-6 shadow-2xl reveal-item" style={{ '--reveal-delay': '80ms' }}>
             <div className="text-center mb-6">
               <p className="text-white/60 text-sm mb-1">房间号</p>
               <h2 className="text-4xl font-bold font-mono tracking-widest text-snow-ice">
