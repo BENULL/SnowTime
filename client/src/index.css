@@ -171,48 +171,153 @@ input, textarea {
   box-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
 }
 
-/* 角色牌特殊样式 */
-.character-card {
-  background: linear-gradient(135deg, #2d1b4e 0%, #1a0f2e 100%);
-  border: 2px solid #d4af37;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.1),
-    0 4px 6px rgba(0, 0, 0, 0.3);
+/* ========== 卡片样式 v2 ========== */
+
+/* 新卡片布局容器 */
+.card-new {
+  position: relative;
+  display: flex;
+  overflow: hidden;
+  border-radius: 0.5rem;
+  border: 2px solid rgba(212, 175, 55, 0.45);
+  box-shadow: 0 8px 18px rgba(6, 10, 18, 0.55);
 }
 
-/* 角色背景图片样式 */
-.card-role-bg {
-  background-image: var(--role-image, none), var(--card-image);
-  background-size: var(--role-size, cover), cover;
+/* 左侧角色图区域 */
+.card-new-left {
+  width: 35%;
+  height: 100%;
+  background-size: cover;
   background-position: center;
-  background-repeat: no-repeat;
+  position: relative;
+  flex-shrink: 0;
 }
 
-/* 角色图片在卡牌上的叠加层 */
-.card-role-overlay {
+/* 左侧角色图遮罩 */
+.card-new-left::after {
+  content: '';
   position: absolute;
   inset: 0;
-  background-image: var(--role-image);
-  background-size: var(--role-size, contain);
-  background-position: center;
-  background-repeat: no-repeat;
-  opacity: var(--role-opacity, 0.9);
-  pointer-events: none;
+  background: linear-gradient(to right, rgba(0,0,0,0.3), transparent);
+}
+
+/* 右侧内容区域 */
+.card-new-right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem;
+  position: relative;
+}
+
+/* 右侧渐变背景 */
+.card-new-right::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(30, 30, 50, 0.85), rgba(20, 20, 40, 0.9));
   z-index: 0;
 }
 
-/* 手牌中角色牌的背景 */
-.card-face.character .card-role-overlay {
-  --role-size: 85%;
-  --role-opacity: 0.8;
+/* 类型标签 */
+.card-new-type {
+  font-size: 0.6rem;
+  opacity: 0.7;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  position: relative;
+  z-index: 1;
 }
 
-/* 树上角色的小尺寸背景 */
-.tree-char-bg {
-  background-image: var(--role-image);
-  background-size: cover;
-  background-position: center;
+/* 艺术数字 */
+.card-new-number {
+  font-family: 'Cinzel', serif;
+  font-weight: 700;
+  font-size: 1.5rem;
+  line-height: 1;
+  position: relative;
+  z-index: 1;
+  text-shadow: 
+    0 0 10px currentColor,
+    0 2px 4px rgba(0, 0, 0, 0.8);
 }
+
+/* 不同卡牌的数字颜色 */
+.card-new.character .card-new-number {
+  color: #ffd700;
+  background: linear-gradient(180deg, #fff7cc, #ffd700, #cc9900);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.card-new.healer .card-new-number {
+  color: #4ade80;
+  background: linear-gradient(180deg, #bbf7d0, #4ade80, #22c55e);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.card-new.watcher .card-new-number {
+  color: #c084fc;
+  background: linear-gradient(180deg, #e9d5ff, #c084fc, #a855f7);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.card-new.blizzard .card-new-number {
+  color: #67e8f9;
+  background: linear-gradient(180deg, #cffafe, #67e8f9, #22d3ee);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* 特殊牌图标 */
+.card-new-icon {
+  font-size: 1.25rem;
+  position: relative;
+  z-index: 1;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+}
+
+/* 暴风雪特殊效果 */
+.card-new.blizzard {
+  background: linear-gradient(135deg, #1e3a5f, #0c1929);
+  border-color: rgba(103, 232, 249, 0.5);
+}
+
+.card-new.blizzard .card-new-right::before {
+  background: linear-gradient(135deg, rgba(30, 60, 90, 0.9), rgba(10, 30, 50, 0.95));
+}
+
+/* 暴风雪冰晶装饰 */
+.card-new.blizzard::after {
+  content: '❄';
+  position: absolute;
+  font-size: 0.8rem;
+  opacity: 0.3;
+  z-index: 1;
+}
+
+/* 小尺寸卡片（弃牌堆等） */
+.card-new-sm .card-new-left {
+  width: 30%;
+}
+
+.card-new-sm .card-new-number {
+  font-size: 1rem;
+}
+
+.card-new-sm .card-new-icon {
+  font-size: 0.9rem;
+}
+
+/* ========== 旧卡片样式（保留兼容性）========== */
 
 .card-face {
   position: relative;
@@ -250,6 +355,38 @@ input, textarea {
 .card-type-healer { --card-tint: rgba(40, 130, 80, 0.55); }
 .card-type-watcher { --card-tint: rgba(110, 60, 150, 0.55); }
 .card-type-blizzard { --card-tint: rgba(60, 110, 160, 0.55); }
+
+/* ========== 角色背景图片样式 ========== */
+
+.card-role-bg {
+  background-image: var(--role-image, none), var(--card-image);
+  background-size: var(--role-size, cover), cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.card-role-overlay {
+  position: absolute;
+  inset: 0;
+  background-image: var(--role-image);
+  background-size: var(--role-size, contain);
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: var(--role-opacity, 0.9);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.card-face.character .card-role-overlay {
+  --role-size: 85%;
+  --role-opacity: 0.8;
+}
+
+.tree-char-bg {
+  background-image: var(--role-image);
+  background-size: cover;
+  background-position: center;
+}
 
 .fruit-token {
   display: inline-block;
