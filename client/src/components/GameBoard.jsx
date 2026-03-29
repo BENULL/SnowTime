@@ -79,20 +79,31 @@ export function GameBoard({ gameState, privateState, playerName, room, socket, o
     }
   }, [gameState?.roundState?.playedCards, currentPlayer?.id]);
 
-  // 监听掷骰子结果，触发动画
+  // 监听掷骰子按钮点击，触发动画
+  const handleRollDice = () => {
+    // 立即开始动画
+    setIsRolling(true);
+    
+    socket.emit('game:roll_dice', null, (response) => {
+      if (!response || !response.success) {
+        setCardPlayError(response?.error || '掷骰子失败');
+        setIsRolling(false);
+      }
+      // 动画继续，等待自动停止
+    });
+  };
+  
+  // 监听 gameState 更新来停止动画
   useEffect(() => {
-    if (gameState?.currentPhase === 'roll_dice' && gameState?.roundState?.diceResult?.length > 0) {
-      // 触发掷骰子动画
-      setIsRolling(true);
-      
-      // 动画持续时间后停止
+    if (isRolling && gameState?.roundState?.diceResult?.length > 0) {
+      // 动画持续 800ms 后停止
       const timer = setTimeout(() => {
         setIsRolling(false);
       }, 800);
       
       return () => clearTimeout(timer);
     }
-  }, [gameState?.currentPhase, gameState?.roundState?.diceResult]);
+  }, [isRolling, gameState?.roundState?.diceResult]);
 
   // 当阶段从 play_cards/watcher_play/resolve 变为其他阶段时，清除已出牌显示
   useEffect(() => {
@@ -852,15 +863,7 @@ export function GameBoard({ gameState, privateState, playerName, room, socket, o
               <div className="space-y-2">
                 {gameState.currentPhase === 'roll_dice' && (
                   <button
-                    onClick={() => {
-                      setIsRolling(true);
-                      socket.emit('game:roll_dice', null, (response) => {
-                        if (!response || !response.success) {
-                          setCardPlayError(response?.error || '掷骰子失败');
-                        }
-                        setTimeout(() => setIsRolling(false), 800);
-                      });
-                    }}
+                    onClick={handleRollDice}
                     disabled={isRolling}
                     className="btn-gold w-full text-sm animate-pulse-glow disabled:opacity-50 disabled:cursor-not-allowed"
                   >
