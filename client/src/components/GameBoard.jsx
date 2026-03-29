@@ -330,24 +330,28 @@ export function GameBoard({ gameState, privateState, playerName, room, socket, o
             <div className="mb-4">
               <p className="text-white/60 text-xs mb-2">弃牌堆 ({healerDiscardPile.length}张):</p>
               <div className="grid grid-cols-4 gap-2 max-h-60 overflow-y-auto p-2 bg-black/20 rounded-lg">
-                {healerDiscardPile.map((card) => (
-                  <button
-                    key={card.id}
-                    onClick={() => toggleHealerRecycleCard(card.id)}
-                    className={`aspect-[2/3] rounded-lg card-face ${getCardTypeClass(card.type)} text-white flex flex-col items-center justify-center text-xs font-bold transition-all ${
-                      healerRecycleCards.includes(card.id)
-                        ? 'ring-2 ring-green-400 scale-105 shadow-lg shadow-green-400/30'
-                        : ''
-                    } hover:scale-105 cursor-pointer active:scale-95`}
-                  >
-                    <span className="text-[10px] opacity-70">
-                      {card.type === 'character' ? '角色' : card.type === 'healer' ? '治疗' : card.type === 'watcher' ? '守望' : '暴雪'}
-                    </span>
-                    <span className="text-lg">
-                      {card.type === 'character' ? card.value : card.type === 'healer' ? '💚' : card.type === 'watcher' ? '👁️' : '❄️'}
-                    </span>
-                  </button>
-                ))}
+                {healerDiscardPile.map((card) => {
+                  const showRoleImage = card.roleImage && card.type !== 'blizzard';
+                  return (
+                    <button
+                      key={card.id}
+                      onClick={() => toggleHealerRecycleCard(card.id)}
+                      className={`aspect-[2/3] rounded-lg card-face ${getCardTypeClass(card.type)} text-white flex flex-col items-center justify-center text-xs font-bold transition-all relative ${
+                        healerRecycleCards.includes(card.id)
+                          ? 'ring-2 ring-green-400 scale-105 shadow-lg shadow-green-400/30'
+                          : ''
+                      } hover:scale-105 cursor-pointer active:scale-95`}
+                      style={showRoleImage ? { backgroundImage: `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url(${card.roleImage})`, backgroundSize: 'cover', backgroundPosition: 'center' } : undefined}
+                    >
+                      <span className="text-[10px] opacity-70">
+                        {card.type === 'character' ? '角色' : card.type === 'healer' ? '治疗' : card.type === 'watcher' ? '守望' : '暴雪'}
+                      </span>
+                      <span className="text-lg">
+                        {card.type === 'character' ? card.value : card.type === 'healer' ? '💚' : card.type === 'watcher' ? '👁️' : '❄️'}
+                      </span>
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
@@ -551,13 +555,14 @@ export function GameBoard({ gameState, privateState, playerName, room, socket, o
                       <div className="flex flex-wrap gap-1">
                         {player.discardPile.map((card, i) => {
                           const roleImage = card.roleImage;
+                          const showRoleImage = roleImage && card.type !== 'blizzard';
                           return (
                             <div
-                              key={i}
+                              key={card.id || i}
                               className={`w-7 h-9 rounded card-face ${getCardTypeClass(card.type)} text-white flex items-center justify-center text-xs font-bold relative overflow-hidden`}
                             >
-                              {/* 角色背景图 */}
-                              {roleImage && card.type === 'character' && (
+                              {/* 角色背景图 - 所有类型都显示（除暴风雪） */}
+                              {showRoleImage && (
                                 <div
                                   className="absolute inset-0"
                                   style={{
@@ -696,12 +701,24 @@ export function GameBoard({ gameState, privateState, playerName, room, socket, o
               <div className="flex flex-col items-center mb-3 p-2 bg-white/5 rounded-lg border border-white/10">
                 <p className="text-white/60 text-xs mb-1">已出牌:</p>
                 <div
-                  className={`aspect-[2/3] w-16 rounded-lg card-face ${getCardTypeClass(playedCardForDisplay.type)} flex flex-col items-center justify-center text-xs font-bold text-white`}
+                  className={`aspect-[2/3] w-16 rounded-lg card-face ${getCardTypeClass(playedCardForDisplay.type)} flex flex-col items-center justify-center text-xs font-bold text-white relative overflow-hidden`}
                 >
-                  <span className="text-[10px] opacity-70">
+                  {/* 角色背景图 */}
+                  {playedCardForDisplay.roleImage && playedCardForDisplay.type !== 'blizzard' && (
+                    <div
+                      className="absolute inset-0"
+                      style={{
+                        backgroundImage: `url(${playedCardForDisplay.roleImage})`,
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        opacity: 0.4,
+                      }}
+                    />
+                  )}
+                  <span className="text-[10px] opacity-70 relative z-10">
                     {playedCardForDisplay.type === 'character' ? '角色' : playedCardForDisplay.type === 'healer' ? '治疗' : playedCardForDisplay.type === 'watcher' ? '守望' : '暴雪'}
                   </span>
-                  <span className="text-lg sm:text-xl">
+                  <span className="text-lg sm:text-xl relative z-10">
                     {playedCardForDisplay.type === 'character' ? playedCardForDisplay.value : playedCardForDisplay.type === 'healer' ? '💚' : playedCardForDisplay.type === 'watcher' ? '👁️' : '❄️'}
                   </span>
                 </div>
@@ -714,6 +731,7 @@ export function GameBoard({ gameState, privateState, playerName, room, socket, o
                   {revealedPlayedCards.map((played) => {
                     const player = playerMap.get(played.playerId);
                     const roleImage = played.roleImage || player?.roleImage;
+                    const showRoleImage = roleImage && played.cardType !== 'blizzard';
                     return (
                       <div key={played.playerId} className="flex items-center gap-2 bg-black/20 rounded p-2">
                         <div
@@ -726,8 +744,8 @@ export function GameBoard({ gameState, privateState, playerName, room, socket, o
                         <div
                           className={`ml-auto w-8 h-11 rounded card-face ${getCardTypeClass(played.cardType)} flex items-center justify-center text-xs font-bold text-white relative overflow-hidden`}
                         >
-                          {/* 角色背景图 */}
-                          {roleImage && played.cardType === 'character' && (
+                          {/* 角色背景图 - 所有类型都显示（除暴风雪） */}
+                          {showRoleImage && (
                             <div
                               className="absolute inset-0"
                               style={{
@@ -790,7 +808,7 @@ export function GameBoard({ gameState, privateState, playerName, room, socket, o
                           ? 'hover:scale-105 cursor-pointer active:scale-95'
                           : 'opacity-50 cursor-not-allowed'
                       }`}
-                      style={card.roleImage && card.type === 'character' ? { backgroundImage: `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url(${card.roleImage})`, backgroundSize: 'cover', backgroundPosition: 'center' } : undefined}
+                      style={card.roleImage && card.type !== 'blizzard' ? { backgroundImage: `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url(${card.roleImage})`, backgroundSize: 'cover', backgroundPosition: 'center' } : undefined}
                     >
                       <span className="text-[10px] opacity-70 pointer-events-none">
                         {card.type === 'character' ? '角色' : card.type === 'healer' ? '治疗' : card.type === 'watcher' ? '守望' : '暴雪'}
