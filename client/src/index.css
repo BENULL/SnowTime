@@ -171,24 +171,57 @@ input, textarea {
   box-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
 }
 
-/* ========== 卡片样式 v2 ========== */
+/* ========== SnowTime 卡片设计 v3 — Frostborne Elegance ========== */
 
-/* 新卡片布局容器 - 水平布局 */
+/* 卡片主容器 - 霜华瑰宝风格 */
 .card-new {
   position: relative;
   display: flex;
   flex-direction: row;
+  border-radius: 12px;
   overflow: hidden;
-  border-radius: 0.5rem;
-  border: 2px solid rgba(212, 175, 55, 0.45);
-  box-shadow: 0 8px 18px rgba(6, 10, 18, 0.55);
   height: 100%;
-  min-height: 60px;
+  min-height: 70px;
+  background: linear-gradient(135deg, #1a0a2e 0%, #0a0612 100%);
+  
+  /* 多层边框效果 */
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* 边框装饰层 */
+.card-new::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 12px;
+  padding: 2px;
+  background: linear-gradient(135deg, var(--player-color, #d4af37) 0%, var(--player-color-dark, #8b6914) 100%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* 顶部装饰线 */
+.card-new::after {
+  content: '';
+  position: absolute;
+  top: 8px;
+  left: 42%;
+  right: 8px;
+  height: 1px;
+  background: linear-gradient(90deg, var(--player-color, #d4af37), transparent);
+  pointer-events: none;
 }
 
 /* 左侧角色图区域 */
 .card-new-left {
-  width: 35%;
+  width: 40%;
   height: 100%;
   background-size: cover;
   background-position: center;
@@ -197,128 +230,176 @@ input, textarea {
   flex-shrink: 0;
 }
 
-/* 左侧角色图遮罩 */
+/* 角色图霜雾效果 */
 .card-new-left::after {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(to right, rgba(0,0,0,0.3), transparent);
+  background: 
+    linear-gradient(90deg, rgba(26, 10, 46, 0.4) 0%, transparent 30%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
+  pointer-events: none;
 }
 
-/* 右侧内容区域 */
+/* 右侧信息区域 */
 .card-new-right {
   flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 0.25rem;
+  padding: 0.5rem 0.25rem;
   position: relative;
+  z-index: 1;
 }
 
-/* 右侧渐变背景 */
-.card-new-right::before {
+/* 玩家颜色变量 - 默认金色 */
+.card-new {
+  --player-color: #d4af37;
+  --player-color-dark: #8b6914;
+}
+
+/* 各玩家颜色映射 */
+.card-new.character { --player-color: #d4af37; --player-color-dark: #8b6914; }
+.card-new.healer { --player-color: #4ade80; --player-color-dark: #16a34a; }
+.card-new.watcher { --player-color: #c084fc; --player-color-dark: #9333ea; }
+.card-new.blizzard { --player-color: #67e8f9; --player-color-dark: #0891b2; }
+
+/* 玩家索引颜色 (1-5) */
+.card-new.color-0 { --player-color: #FF6B6B; --player-color-dark: #dc2626; }
+.card-new.color-1 { --player-color: #4ECDC4; --player-color-dark: #0d9488; }
+.card-new.color-2 { --player-color: #FFE66D; --player-color-dark: #ca8a04; }
+.card-new.color-3 { --player-color: #95E1D3; --player-color-dark: #2dd4bf; }
+.card-new.color-4 { --player-color: #F38181; --player-color-dark: #e11d48; }
+
+/* 底部装饰线 */
+.card-new-right::after {
   content: '';
   position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, rgba(30, 30, 50, 0.85), rgba(20, 20, 40, 0.9));
-  z-index: 0;
+  bottom: 6px;
+  left: 8px;
+  right: 8px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--player-color, #d4af37), transparent);
+  opacity: 0.6;
+  pointer-events: none;
 }
 
 /* 类型标签 */
 .card-new-type {
-  font-size: 0.6rem;
-  opacity: 0.7;
+  font-family: 'Cinzel', serif;
+  font-size: 0.5rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  position: relative;
-  z-index: 1;
+  color: var(--player-color, #d4af37);
+  opacity: 0.9;
+  margin-bottom: 2px;
+}
+
+/* 宝石装饰 */
+.card-new-gem {
+  width: 8px;
+  height: 8px;
+  background: var(--player-color, #d4af37);
+  transform: rotate(45deg);
+  margin: 2px 0;
+  box-shadow: 
+    0 0 6px var(--player-color, #d4af37),
+    inset 0 -2px 2px rgba(0, 0, 0, 0.3);
 }
 
 /* 艺术数字 */
 .card-new-number {
   font-family: 'Cinzel', serif;
   font-weight: 700;
-  font-size: 1.5rem;
+  font-size: 1.75rem;
   line-height: 1;
-  position: relative;
-  z-index: 1;
-  text-shadow: 
-    0 0 10px currentColor,
-    0 2px 4px rgba(0, 0, 0, 0.8);
-}
-
-/* 不同卡牌的数字颜色 */
-.card-new.character .card-new-number {
-  color: #ffd700;
-  background: linear-gradient(180deg, #fff7cc, #ffd700, #cc9900);
+  background: linear-gradient(180deg, #fff7cc 0%, #ffd700 40%, #b8860b 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-}
-
-.card-new.healer .card-new-number {
-  color: #4ade80;
-  background: linear-gradient(180deg, #bbf7d0, #4ade80, #22c55e);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.card-new.watcher .card-new-number {
-  color: #c084fc;
-  background: linear-gradient(180deg, #e9d5ff, #c084fc, #a855f7);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.card-new.blizzard .card-new-number {
-  color: #67e8f9;
-  background: linear-gradient(180deg, #cffafe, #67e8f9, #22d3ee);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  text-shadow: none;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 8px rgba(255, 215, 0, 0.4));
+  margin: 2px 0;
 }
 
 /* 特殊牌图标 */
 .card-new-icon {
-  font-size: 1.25rem;
-  position: relative;
-  z-index: 1;
+  font-size: 1.5rem;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+  animation: icon-pulse 2s ease-in-out infinite;
+}
+
+@keyframes icon-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.9; }
+  50% { transform: scale(1.05); opacity: 1; }
 }
 
 /* 暴风雪特殊效果 */
 .card-new.blizzard {
-  background: linear-gradient(135deg, #1e3a5f, #0c1929);
-  border-color: rgba(103, 232, 249, 0.5);
+  background: linear-gradient(135deg, #0c1929 0%, #1e3a5f 50%, #0c1929 100%);
+  --player-color: #67e8f9;
+  --player-color-dark: #0891b2;
 }
 
-.card-new.blizzard .card-new-right::before {
-  background: linear-gradient(135deg, rgba(30, 60, 90, 0.9), rgba(10, 30, 50, 0.95));
-}
-
-/* 暴风雪冰晶装饰 */
 .card-new.blizzard::after {
   content: '❄';
   position: absolute;
-  font-size: 0.8rem;
-  opacity: 0.3;
-  z-index: 1;
+  top: 50%;
+  left: 8px;
+  transform: translateY(-50%);
+  font-size: 0.6rem;
+  opacity: 0.2;
+  color: #67e8f9;
+}
+
+/* 暴风雪冰晶装饰 */
+.card-new.blizzard .card-new-right::before {
+  content: '◇';
+  position: absolute;
+  top: 4px;
+  right: 6px;
+  font-size: 0.4rem;
+  color: rgba(103, 232, 249, 0.4);
 }
 
 /* 小尺寸卡片（弃牌堆等） */
-.card-new-sm .card-new-left {
-  width: 30%;
+.card-new-sm {
+  min-height: 50px;
 }
 
 .card-new-sm .card-new-number {
-  font-size: 1rem;
+  font-size: 1.2rem;
 }
 
 .card-new-sm .card-new-icon {
-  font-size: 0.9rem;
+  font-size: 1rem;
+}
+
+.card-new-sm .card-new-type {
+  font-size: 0.4rem;
+}
+
+.card-new-sm .card-new-gem {
+  width: 6px;
+  height: 6px;
+}
+
+/* 选中状态 */
+.card-new.selected {
+  transform: scale(1.02);
+  box-shadow: 
+    0 0 0 3px var(--player-color, #d4af37),
+    0 12px 40px rgba(0, 0, 0, 0.7),
+    0 0 30px var(--player-color, #d4af37);
+}
+
+/* 悬停效果 */
+.card-new:hover {
+  box-shadow: 
+    0 12px 40px rgba(0, 0, 0, 0.7),
+    0 0 20px var(--player-color, #d4af37);
 }
 
 /* ========== 旧卡片样式（保留兼容性）========== */

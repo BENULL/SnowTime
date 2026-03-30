@@ -40,16 +40,19 @@ export function GameBoard({ gameState, privateState, playerName, room, socket, o
   };
 
   // 渲染新式卡片
-  const renderCard = (card, isSmall = false) => {
+  const renderCard = (card, isSmall = false, playerColorIndex = null) => {
     const typeClass = card.type || 'character';
     const roleImage = card.roleImage;
     const showRoleImage = roleImage && card.type !== 'blizzard';
     const icon = getCardIcon(card.type);
 
+    // 计算玩家颜色类
+    const colorClass = playerColorIndex !== null ? `color-${playerColorIndex}` : '';
+
     return (
       <div
-        className={`card-new ${typeClass} ${isSmall ? 'card-new-sm' : ''}`}
-        style={!showRoleImage ? { background: 'linear-gradient(135deg, #2a2a4a, #1a1a3a)' } : undefined}
+        className={`card-new ${typeClass} ${isSmall ? 'card-new-sm' : ''} ${colorClass}`}
+        style={!showRoleImage && !colorClass ? { background: 'linear-gradient(135deg, #1a0a2e, #0a0612)' } : undefined}
       >
         {/* 左侧角色图 */}
         {showRoleImage && (
@@ -65,6 +68,9 @@ export function GameBoard({ gameState, privateState, playerName, room, socket, o
         <div className="card-new-right">
           {/* 类型标签 */}
           <span className="card-new-type">{getCardTypeName(card.type)}</span>
+          
+          {/* 宝石装饰 */}
+          <div className="card-new-gem" />
 
           {/* 数字或图标 */}
           {card.type === 'character' ? (
@@ -72,6 +78,9 @@ export function GameBoard({ gameState, privateState, playerName, room, socket, o
           ) : (
             <span className="card-new-icon">{icon}</span>
           )}
+          
+          {/* 宝石装饰 */}
+          <div className="card-new-gem" />
         </div>
       </div>
     );
@@ -776,6 +785,9 @@ export function GameBoard({ gameState, privateState, playerName, room, socket, o
                   const canPlayCard = gameState.currentPhase === 'play_cards' && !playedCardForDisplay;
                   const canWatcherPlay = isWatcherPhase && isWatcherPlayer;
                   const isClickable = canPlayCard || canWatcherPlay;
+                  
+                  // 获取当前玩家的颜色索引
+                  const playerColorIndex = gameState.players.findIndex(p => p.id === currentPlayer?.id);
 
                   return (
                     <button
@@ -795,7 +807,7 @@ export function GameBoard({ gameState, privateState, playerName, room, socket, o
                         }
                       }}
                       disabled={!isClickable}
-                      className={`aspect-[2/3] min-h-[60px] sm:min-h-[80px] transition-all ${
+                      className={`transition-all ${
                         selectedCard === card.id || watcherSelectedCard === card.id
                           ? 'ring-2 ring-snow-gold scale-105 shadow-lg shadow-snow-gold/30'
                           : ''
@@ -805,7 +817,7 @@ export function GameBoard({ gameState, privateState, playerName, room, socket, o
                           : 'opacity-50 cursor-not-allowed'
                       }`}
                     >
-                      {renderCard(card)}
+                      {renderCard(card, false, playerColorIndex)}
                     </button>
                   );
                 })}
