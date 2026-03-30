@@ -161,17 +161,21 @@ export function GameBoard({ gameState, privateState, playerName, room, socket, o
     });
   };
   
-  // 监听 gameState 更新来停止动画
+  // 监听游戏状态变化，自动处理动画
   useEffect(() => {
-    if (isRolling && gameState?.roundState?.diceResult?.length > 0) {
-      // 动画持续 800ms 后停止
-      const timer = setTimeout(() => {
-        setIsRolling(false);
-      }, 800);
-      
-      return () => clearTimeout(timer);
+    // 当进入 roll_dice 阶段且 diceResult 有值时，开始动画
+    if (gameState?.currentPhase === 'roll_dice' && gameState?.roundState?.diceResult?.length > 0) {
+      // 如果之前没有在动画中，开始新动画
+      if (!isRolling) {
+        setIsRolling(true);
+        // 800ms 后停止动画
+        const timer = setTimeout(() => {
+          setIsRolling(false);
+        }, 800);
+        return () => clearTimeout(timer);
+      }
     }
-  }, [isRolling, gameState?.roundState?.diceResult]);
+  }, [gameState?.currentPhase, gameState?.roundState?.diceResult]);
 
   // 当阶段从 play_cards/watcher_play/resolve 变为其他阶段时，清除已出牌显示
   useEffect(() => {
@@ -455,7 +459,7 @@ export function GameBoard({ gameState, privateState, playerName, room, socket, o
                 {gameState.roundState.diceResult.map((die, i) => (
                   <div
                     key={i}
-                    className={`w-8 h-8 lg:w-10 lg:h-10 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-lg flex items-center justify-center text-lg lg:text-xl font-bold shadow-lg transition-all ${
+                    className={`w-10 h-10 lg:w-12 lg:h-12 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-xl flex items-center justify-center text-xl lg:text-2xl font-bold shadow-lg ${
                       isRolling ? 'dice-rolling dice-glow' : ''
                     }`}
                   >
