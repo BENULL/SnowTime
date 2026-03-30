@@ -48,7 +48,7 @@ export function GameBoard({ gameState, privateState, playerName, room, socket, o
 
     return (
       <div
-        className={`card-new ${typeClass} ${isSmall ? 'card-new-sm' : ''} flex flex-col`}
+        className={`card-new ${typeClass} ${isSmall ? 'card-new-sm' : ''}`}
         style={!showRoleImage ? { background: 'linear-gradient(135deg, #2a2a4a, #1a1a3a)' } : undefined}
       >
         {/* 左侧角色图 */}
@@ -62,7 +62,7 @@ export function GameBoard({ gameState, privateState, playerName, room, socket, o
         )}
 
         {/* 右侧内容 */}
-        <div className="card-new-right flex-1">
+        <div className="card-new-right">
           {/* 类型标签 */}
           <span className="card-new-type">{getCardTypeName(card.type)}</span>
 
@@ -744,6 +744,12 @@ export function GameBoard({ gameState, privateState, playerName, room, socket, o
                 <div className="grid grid-cols-2 gap-2">
                   {revealedPlayedCards.map((played) => {
                     const player = playerMap.get(played.playerId);
+                    // 使用 played.cardType 和 played.cardValue 构造卡片对象
+                    const cardData = {
+                      type: played.cardType,
+                      value: played.cardValue,
+                      roleImage: played.roleImage || player?.roleImage,
+                    };
                     return (
                       <div key={played.playerId} className="flex items-center gap-2 bg-black/20 rounded p-2">
                         <div
@@ -754,7 +760,7 @@ export function GameBoard({ gameState, privateState, playerName, room, socket, o
                           {player?.name || '玩家'}
                         </span>
                         <div className="ml-auto w-8">
-                          {renderCard({ ...played, roleImage: played.roleImage || player?.roleImage }, true)}
+                          {renderCard(cardData, true)}
                         </div>
                       </div>
                     );

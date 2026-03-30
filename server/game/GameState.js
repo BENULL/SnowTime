@@ -964,10 +964,13 @@ class GameState {
     if (!player) return null;
 
     const healerChoice = this.roundState.healerRecycleChoices.get(playerId);
+    
+    // 获取弃牌堆，确保包含 roleImage
+    const discardPile = this.deckManager.getDiscardPile(playerId);
 
     return {
       hand: player.hand,
-      discardPile: this.deckManager.getDiscardPile(playerId),
+      discardPile: discardPile,
       healerRecycleChoice: healerChoice ? {
         needsChoice: healerChoice.needsChoice,
         discardPile: healerChoice.discardPile || []
