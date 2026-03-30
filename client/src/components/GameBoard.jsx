@@ -466,8 +466,8 @@ export function GameBoard({ gameState, privateState, playerName, room, socket, o
             )}
             <div className="text-right text-xs lg:text-sm">
               <p className="text-white/60 flex items-center justify-end gap-2">
-                <span className="fruit-token" />
-                <span className="text-snow-fruit font-bold">{gameState.remainingFruits}</span>
+                <span className="fruit-token lg" />
+                <span className="text-snow-fruit font-bold text-lg">{gameState.remainingFruits}</span>
               </p>
               <p className="text-white/40">{gameState.roomCode}</p>
             </div>
@@ -655,7 +655,7 @@ export function GameBoard({ gameState, privateState, playerName, room, socket, o
                   </div>
 
                   {/* 果实区域 */}
-                  <div className="flex-1 flex items-center gap-1 min-h-[32px]">
+                  <div className="flex-1 flex items-center gap-2 min-h-[40px] flex-wrap py-1">
                     {Array.from({ length: level.fruits }).map((_, i) => (
                       <span key={i} className="fruit-token fruit-animate" />
                     ))}

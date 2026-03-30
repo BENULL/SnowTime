@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SnowTime - 卡牌预览</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Marcellus&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #0b1424 0%, #0f1b33 50%, #0b0f1d 100%);
+      font-family: 'Marcellus', serif;
+      color: rgba(255, 255, 255, 0.87);
+      padding: 2rem;
+    }
+
+    h1 {
+      font-family: 'Cinzel', serif;
+      text-align: center;
+      font-size: 2.5rem;
+      background: linear-gradient(180deg, #fff7cc 0%, #ffd700 40%, #b8860b 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.5rem;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: rgba(135, 206, 235, 0.6);
+      margin-bottom: 2rem;
+    }
+
+    .player-section {
+      margin-bottom: 3rem;
+    }
+
+    .player-title {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .player-color-dot {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+    }
+
+    .player-name {
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+
+    .cards-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      padding: 1rem;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 12px;
+    }
+
+    /* ========== 卡片样式 ========== */
+    .card {
+      width: 100px;
+      height: 140px;
+      position: relative;
+      display: flex;
+      flex-direction: row;
+      border-radius: 12px;
+      overflow: hidden;
+      background: linear-gradient(135deg, #1a0a2e 0%, #0a0612 100%);
+      border: 2px solid transparent;
+      background-clip: padding-box;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .card:hover {
+      transform: translateY(-4px) scale(1.02);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.7), 0 0 20px var(--player-color, #d4af37);
+    }
+
+    /* 边框装饰 */
+    .card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 12px;
+      padding: 2px;
+      background: linear-gradient(135deg, var(--player-color, #d4af37) 0%, var(--player-color-dark, #8b6914) 100%);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+    }
+
+    /* 顶部装饰线 */
+    .card::after {
+      content: '';
+      position: absolute;
+      top: 8px;
+      left: 42%;
+      right: 8px;
+      height: 1px;
+      background: linear-gradient(90deg, var(--player-color, #d4af37), transparent);
+      pointer-events: none;
+    }
+
+    /* 角色图区域 */
+    .card-left {
+      width: 40%;
+      height: 100%;
+      background-size: cover;
+      background-position: center;
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .card-left::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, rgba(26, 10, 46, 0.5) 0%, transparent 30%),
+                  linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
+    }
+
+    /* 右侧信息 */
+    .card-right {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 0.5rem 0.25rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .card-right::after {
+      content: '';
+      position: absolute;
+      bottom: 6px;
+      left: 8px;
+      right: 8px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--player-color, #d4af37), transparent);
+      opacity: 0.6;
+    }
+
+    .card-type {
+      font-family: 'Cinzel', serif;
+      font-size: 0.5rem;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--player-color, #d4af37);
+      opacity: 0.9;
+      margin-bottom: 2px;
+    }
+
+    .card-gem {
+      width: 6px;
+      height: 6px;
+      background: var(--player-color, #d4af37);
+      transform: rotate(45deg);
+      margin: 2px 0;
+      box-shadow: 0 0 6px var(--player-color, #d4af37), inset 0 -2px 2px rgba(0, 0, 0, 0.3);
+    }
+
+    .card-number {
+      font-family: 'Cinzel', serif;
+      font-weight: 700;
+      font-size: 1.75rem;
+      line-height: 1;
+      background: linear-gradient(180deg, #fff7cc 0%, #ffd700 40%, #b8860b 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 8px rgba(255, 215, 0, 0.4));
+    }
+
+    .card-icon {
+      font-size: 1.5rem;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+    }
+
+    /* 特殊牌样式 */
+    .card.healer { --player-color: #4ade80; --player-color-dark: #16a34a; }
+    .card.watcher { --player-color: #c084fc; --player-color-dark: #9333ea; }
+    .card.blizzard {
+      --player-color: #67e8f9; --player-color-dark: #0891b2;
+      background: linear-gradient(135deg, #0c1929 0%, #1e3a5f 50%, #0c1929 100%);
+    }
+
+    /* 玩家颜色 */
+    .card.color-0 { --player-color: #FF6B6B; --player-color-dark: #dc2626; }
+    .card.color-1 { --player-color: #4ECDC4; --player-color-dark: #0d9488; }
+    .card.color-2 { --player-color: #FFE66D; --player-color-dark: #ca8a04; }
+    .card.color-3 { --player-color: #95E1D3; --player-color-dark: #2dd4bf; }
+    .card.color-4 { --player-color: #F38181; --player-color-dark: #e11d48; }
+
+    /* 特效卡 */
+    .card-special {
+      width: 100px;
+      height: 140px;
+      position: relative;
+      display: flex;
+      flex-direction: row;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 2px solid transparent;
+      background-clip: padding-box;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .card-special:hover {
+      transform: translateY(-4px) scale(1.02);
+    }
+
+    .card-special::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 12px;
+      padding: 2px;
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+    }
+
+    /* 治疗牌 */
+    .card-special.healer {
+      background: linear-gradient(135deg, #0a2e1a 0%, #061210 100%);
+    }
+    .card-special.healer::before {
+      background: linear-gradient(135deg, #4ade80 0%, #16a34a 100%);
+    }
+
+    /* 守望牌 */
+    .card-special.watcher {
+      background: linear-gradient(135deg, #1a0a2e 0%, #0a0612 100%);
+    }
+    .card-special.watcher::before {
+      background: linear-gradient(135deg, #c084fc 0%, #9333ea 100%);
+    }
+
+    /* 暴风雪牌 */
+    .card-special.blizzard {
+      background: linear-gradient(135deg, #0c1929 0%, #1e3a5f 50%, #0c1929 100%);
+    }
+    .card-special.blizzard::before {
+      background: linear-gradient(135deg, #67e8f9 0%, #0891b2 100%);
+    }
+
+    /* 小卡片 */
+    .card-sm {
+      width: 60px;
+      height: 84px;
+    }
+
+    .card-sm .card-left {
+      width: 35%;
+    }
+
+    .card-sm .card-number {
+      font-size: 1rem;
+    }
+
+    .card-sm .card-icon {
+      font-size: 0.9rem;
+    }
+
+    .card-sm .card-type {
+      font-size: 0.35rem;
+    }
+
+    .card-sm .card-gem {
+      width: 4px;
+      height: 4px;
+    }
+
+    /* 预览说明 */
+    .preview-section {
+      margin-top: 3rem;
+      padding: 1.5rem;
+      background: rgba(135, 206, 235, 0.05);
+      border-radius: 12px;
+      border: 1px solid rgba(135, 206, 235, 0.2);
+    }
+
+    .preview-title {
+      font-size: 1.1rem;
+      color: rgba(135, 206, 235, 0.8);
+      margin-bottom: 1rem;
+    }
+
+    .size-options {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .size-option {
+      padding: 0.5rem 1rem;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 8px;
+      font-size: 0.9rem;
+    }
+
+    .size-option span {
+      color: rgba(135, 206, 235, 0.6);
+    }
+
+    /* 截图区域 */
+    #screenshot-area {
+      background: linear-gradient(135deg, #0b1424 0%, #0f1b33 50%, #0b0f1d 100%);
+      padding: 2rem;
+      border-radius: 16px;
+      margin: 1rem 0;
+    }
+  </style>
+</head>
+<body>
+  <div id="screenshot-area">
+    <h1>SnowTime</h1>
+    <p class="subtitle">卡牌预览 · Frostborne Elegance</p>
+
+    <!-- 玩家1 - 红色 -->
+    <div class="player-section">
+      <div class="player-title">
+        <div class="player-color-dot" style="background: #FF6B6B"></div>
+        <span class="player-name">玩家 1 - 烈焰红</span>
+      </div>
+      <div class="cards-container">
+        <div class="card color-0">
+          <div class="card-left" style="background-image: url('assets/role1.png')"></div>
+          <div class="card-right">
+            <span class="card-type">角色</span>
+            <div class="card-gem"></div>
+            <span class="card-number">1</span>
+            <div class="card-gem"></div>
+          </div>
+        </div>
+        <div class="card color-0">
+          <div class="card-left" style="background-image: url('assets/role1.png')"></div>
+          <div class="card-right">
+            <span class="card-type">角色</span>
+            <div class="card-gem"></div>
+            <span class="card-number">5</span>
+            <div class="card-gem"></div>
+          </div>
+        </div>
+        <div class="card color-0">
+          <div class="card-left" style="background-image: url('assets/role1.png')"></div>
+          <div class="card-right">
+            <span class="card-type">角色</span>
+            <div class="card-gem"></div>
+            <span class="card-number">7</span>
+            <div class="card-gem"></div>
+          </div>
+        </div>
+        <div class="card-special healer color-0">
+          <div class="card-left" style="background-image: url('assets/role1.png')"></div>
+          <div class="card-right">
+            <span class="card-type">治疗</span>
+            <div class="card-gem"></div>
+            <span class="card-icon">💚</span>
+            <div class="card-gem"></div>
+          </div>
+        </div>
+        <div class="card-special watcher color-0">
+          <div class="card-left" style="background-image: url('assets/role1.png')"></div>
+          <div class="card-right">
+            <span class="card-type">守望</span>
+            <div class="card-gem"></div>
+            <span class="card-icon">👁️</span>
+            <div class="card-gem"></div>
+          </div>
+        </div>
+        <div class="card-special blizzard">
+          <div class="card-left" style="background-image: url('assets/role1.png')"></div>
+          <div class="card-right">
+            <span class="card-type">暴雪</span>
+            <div class="card-gem"></div>
+            <span class="card-icon">❄️</span>
+            <div class="card-gem"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 玩家2 - 青色 -->
+    <div class="player-section">
+      <div class="player-title">
+        <div class="player-color-dot" style="background: #4ECDC4"></div>
+        <span class="player-name">玩家 2 - 冰川青</span>
+      </div>
+      <div class="cards-container">
+        <div class="card color-1">
+          <div class="card-left" style="background-image: url('assets/role2.png')"></div>
+          <div class="card-right">
+            <span class="card-type">角色</span>
+            <div class="card-gem"></div>
+            <span class="card-number">3</span>
+            <div class="card-gem"></div>
+          </div>
+        </div>
+        <div class="card color-1">
+          <div class="card-left" style="background-image: url('assets/role2.png')"></div>
+          <div class="card-right">
+            <span class="card-type">角色</span>
+            <div class="card-gem"></div>
+            <span class="card-number">6</span>
+            <div class="card-gem"></div>
+          </div>
+        </div>
+        <div class="card-special healer color-1">
+          <div class="card-left" style="background-image: url('assets/role2.png')"></div>
+          <div class="card-right">
+            <span class="card-type">治疗</span>
+            <div class="card-gem"></div>
+            <span class="card-icon">💚</span>
+            <div class="card-gem"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 玩家3 - 黄色 -->
+    <div class="player-section">
+      <div class="player-title">
+        <div class="player-color-dot" style="background: #FFE66D"></div>
+        <span class="player-name">玩家 3 - 琥珀黄</span>
+      </div>
+      <div class="cards-container">
+        <div class="card color-2">
+          <div class="card-left" style="background-image: url('assets/role3.png')"></div>
+          <div class="card-right">
+            <span class="card-type">角色</span>
+            <div class="card-gem"></div>
+            <span class="card-number">2</span>
+            <div class="card-gem"></div>
+          </div>
+        </div>
+        <div class="card color-2">
+          <div class="card-left" style="background-image: url('assets/role3.png')"></div>
+          <div class="card-right">
+            <span class="card-type">角色</span>
+            <div class="card-gem"></div>
+            <span class="card-number">4</span>
+            <div class="card-gem"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 玩家4 - 薄荷绿 -->
+    <div class="player-section">
+      <div class="player-title">
+        <div class="player-color-dot" style="background: #95E1D3"></div>
+        <span class="player-name">玩家 4 - 翡翠绿</span>
+      </div>
+      <div class="cards-container">
+        <div class="card color-3">
+          <div class="card-left" style="background-image: url('assets/role4.png')"></div>
+          <div class="card-right">
+            <span class="card-type">角色</span>
+            <div class="card-gem"></div>
+            <span class="card-number">1</span>
+            <div class="card-gem"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 玩家5 - 粉色 -->
+    <div class="player-section">
+      <div class="player-title">
+        <div class="player-color-dot" style="background: #F38181"></div>
+        <span class="player-name">玩家 5 - 樱花粉</span>
+      </div>
+      <div class="cards-container">
+        <div class="card color-4">
+          <div class="card-left" style="background-image: url('assets/role5.png')"></div>
+          <div class="card-right">
+            <span class="card-type">角色</span>
+            <div class="card-gem"></div>
+            <span class="card-number">7</span>
+            <div class="card-gem"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 小尺寸预览 -->
+    <div class="preview-section">
+      <p class="preview-title">📐 小尺寸卡牌（弃牌堆 / 公开牌）</p>
+      <div class="size-options">
+        <div class="card card-sm color-0">
+          <div class="card-left" style="background-image: url('assets/role1.png')"></div>
+          <div class="card-right">
+            <span class="card-type">角色</span>
+            <div class="card-gem"></div>
+            <span class="card-number">3</span>
+            <div class="card-gem"></div>
+          </div>
+        </div>
+        <div class="card-special healer card-sm color-1">
+          <div class="card-left" style="background-image: url('assets/role2.png')"></div>
+          <div class="card-right">
+            <span class="card-type">治疗</span>
+            <div class="card-gem"></div>
+            <span class="card-icon">💚</span>
+            <div class="card-gem"></div>
+          </div>
+        </div>
+        <div class="card-special watcher card-sm color-2">
+          <div class="card-left" style="background-image: url('assets/role3.png')"></div>
+          <div class="card-right">
+            <span class="card-type">守望</span>
+            <div class="card-gem"></div>
+            <span class="card-icon">👁️</span>
+            <div class="card-gem"></div>
+          </div>
+        </div>
+        <div class="card-special blizzard card-sm">
+          <div class="card-left" style="background-image: url('assets/role4.png')"></div>
+          <div class="card-right">
+            <span class="card-type">暴雪</span>
+            <div class="card-gem"></div>
+            <span class="card-icon">❄️</span>
+            <div class="card-gem"></div>
+          </div>
+        </div>
+        <div class="card card-sm color-4">
+          <div class="card-left" style="background-image: url('assets/role5.png')"></div>
+          <div class="card-right">
+            <span class="card-type">角色</span>
+            <div class="card-gem"></div>
+            <span class="card-number">5</span>
+            <div class="card-gem"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

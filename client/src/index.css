@@ -475,23 +475,76 @@ input, textarea {
 
 .fruit-token {
   display: inline-block;
-  width: 22px;
-  height: 22px;
+  width: 28px;
+  height: 28px;
   background-image: var(--fruit-image);
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
-  filter: drop-shadow(0 4px 6px rgba(10, 16, 30, 0.6));
+  filter: drop-shadow(0 4px 8px rgba(10, 16, 30, 0.7));
+  flex-shrink: 0;
+}
+
+/* 中等屏幕 */
+@media (min-width: 768px) {
+  .fruit-token {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+/* 大屏幕 */
+@media (min-width: 1024px) {
+  .fruit-token {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+/* 超大屏幕 */
+@media (min-width: 1280px) {
+  .fruit-token {
+    width: 40px;
+    height: 40px;
+  }
 }
 
 .fruit-token.lg {
-  width: 28px;
-  height: 28px;
+  width: 36px;
+  height: 36px;
+}
+
+@media (min-width: 768px) {
+  .fruit-token.lg {
+    width: 42px;
+    height: 42px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .fruit-token.lg {
+    width: 48px;
+    height: 48px;
+  }
 }
 
 .fruit-token.xl {
-  width: 34px;
-  height: 34px;
+  width: 44px;
+  height: 44px;
+}
+
+@media (min-width: 768px) {
+  .fruit-token.xl {
+    width: 52px;
+    height: 52px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .fruit-token.xl {
+    width: 60px;
+    height: 60px;
+  }
 }
 
 .reveal-item {
